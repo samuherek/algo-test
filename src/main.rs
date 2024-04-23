@@ -119,6 +119,59 @@ fn factors(input: i32) -> Res<Vec<i32>> {
     Res::new(result, ticks)
 }
 
+fn primes_until(input: u32) -> Res<Vec<u32>> {
+    let mut ticks = 0;
+    let mut primes = vec![true; input as usize];
+    primes[0] = false; // 0 is not included in the prime list
+
+    for p in 2..((input as f64).sqrt() as u32 + 1) {
+        if primes[p as usize] {
+            let mut multiple = p * p;
+            while multiple < input {
+                primes[multiple as usize] = false;
+                multiple += p;
+                ticks += 1;
+            }
+        }
+    }
+
+    // this is my initial wrong implementation that I couldn't figure my way out of it.
+    // I guess I misunderstood the idea of how to appraoch it.
+    //
+    //
+    // let mut next_val = 2;
+    // println!("primes:: {:?}", primes);
+    // while next_val < input / 2 {
+    //     for i in next_val..input {
+    //         ticks += 1;
+    //         println!("deep::: {}, position: {}", i, next_val);
+    //         if input % i == 0 {
+    //             primes[(i - 1) as usize] = false;
+    //         }
+    //     }
+    //     println!("primes:: {:?}", primes);
+    //     if let Some(pos) = &primes
+    //         .iter()
+    //         .enumerate()
+    //         .position(|(i, v)| i >= next_val as usize && *v == true)
+    //     {
+    //         println!("next val {pos}");
+    //         next_val = (*pos + 1) as u32;
+    //     } else {
+    //         break;
+    //     }
+    // }
+
+    let result = primes
+        .iter()
+        .enumerate()
+        .filter(|&(_, &v)| v)
+        .map(|(i, _)| i as u32)
+        .collect();
+
+    Res::new(result, ticks)
+}
+
 fn start(name: &str, input: &[usize]) {
     println!("");
     println!("----------- {name}");
@@ -143,4 +196,8 @@ fn main() {
     let value = 2398;
     start(&"FACTOR", &[value]);
     factors(value as i32).print();
+
+    let value = 36;
+    start(&"PRIMES_UNTIL", &[value]);
+    primes_until(value as u32).print();
 }
