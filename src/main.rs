@@ -11,26 +11,8 @@ impl<T: Debug> Res<T> {
 
     fn print(&self) {
         println!("result: {:?}", self.value);
-        // self.value.print();
     }
 }
-//
-// trait Print {
-//     fn print(&self);
-// }
-//
-// impl Print for f64 {
-//     fn print(&self) {
-//         println!("result: {self}");
-//     }
-// }
-//
-// impl Print for Vec<usize> {
-//     fn print(&self) {
-//         println!("result: {self:?}");
-//     }
-// }
-
 
 fn median(input: &[usize]) -> Res<f64> {
     let mut values = input.to_vec();
@@ -66,6 +48,56 @@ fn rotate_left(input: &[usize], offset: usize) -> Res<Vec<usize>> {
     Res::new(res)
 }
 
+struct ListNode<T> {
+    data: T,
+    next: Option<Box<ListNode<T>>>,
+}
+
+struct LinkedList<T> {
+    head: Option<Box<ListNode<T>>>,
+}
+
+impl<T: Debug> std::fmt::Debug for LinkedList<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "LinkedList ")?;
+        let mut current = &self.head;
+        while let Some(node) = current {
+            write!(f, "{:?} -> ", node.data)?;
+            current = &node.next;
+        }
+        write!(f, "None")
+    }
+}
+
+impl<T> LinkedList<T> {
+    fn new() -> Self {
+        Self { head: None }
+    }
+
+    fn push(&mut self, data: T) {
+        let next_node = Box::new(ListNode {
+            data,
+            next: self.head.take(),
+        });
+        self.head = Some(next_node);
+    }
+
+    fn pop(&mut self) -> Option<T> {
+        self.head.take().map(|node| {
+            self.head = node.next;
+            node.data
+        })
+    }
+}
+
+fn list(input: &[usize]) -> LinkedList<usize> {
+    let mut list = LinkedList::new();
+    for v in input {
+        list.push(*v);
+    }
+    list
+}
+
 fn start(name: &str, input: &[usize]) {
     println!("");
     println!("----------- {name}");
@@ -83,4 +115,7 @@ fn main() {
 
     start(&"ROTATE_LEFT", &input);
     rotate_left(&input, 10).print();
+
+    start(&"LIST", &input);
+    println!("{:?}", list(&input));
 }
