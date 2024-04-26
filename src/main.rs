@@ -173,6 +173,10 @@ fn primes_until(input: u32) -> Res<Vec<u32>> {
 }
 
 fn balanced_brackets(val: &str) -> Res<bool> {
+    // This can also be done with just a number and we don't have to
+    // keep track of the stack if we only allow one type of brackets.
+    // Just something to keep in mind. As just a number might be a better
+    // idea.
     let mut ticks = 0;
     let mut stack = Vec::new();
     let mut balanced = true;
@@ -193,10 +197,33 @@ fn balanced_brackets(val: &str) -> Res<bool> {
         }
     }
 
-    Res::new(balanced, ticks)
+    Res::new(balanced && stack.is_empty(), ticks)
 }
 
-fn start(name: &str, input: &[usize]) {
+fn check_any_two_nums_sum(input: &[i32]) -> Res<Vec<i32>> {
+    let mut ticks = 0;
+    let mut result = Vec::new();
+
+    // TODO: There must be a better way to do this then to have
+    // two loops that each have a "break" keyword.
+    // Maybe some functional way is a nicer way to go about it.
+    for (i, val) in input.iter().enumerate() {
+        for j in (i + 1)..input.len() {
+            ticks += 1;
+            if val + input[j] == 0 {
+                result.push(*val);
+                result.push(input[j]);
+                break;
+            }
+        }
+        if result.len() > 0 {
+            break;
+        }
+    }
+    Res::new(result, ticks)
+}
+
+fn start<T: Debug>(name: &str, input: &[T]) {
     println!("");
     println!("----------- {name}");
     println!("input: {input:?}");
@@ -226,6 +253,10 @@ fn main() {
     primes_until(value as u32).print();
 
     let value = "[[[    ]]]";
-    start(&"BALANCED_BRACKETS", &[]);
+    start(&"BALANCED_BRACKETS", &["[[[    ]]]"]);
     balanced_brackets(&value).print();
+
+    let value = [2, 5, -12, 23, 12, 52, 3, -44];
+    start(&"CHECK_ANY_TWO_NUMS_SUM", &value);
+    check_any_two_nums_sum(&value).print();
 }
