@@ -172,6 +172,30 @@ fn primes_until(input: u32) -> Res<Vec<u32>> {
     Res::new(result, ticks)
 }
 
+fn balanced_brackets(val: &str) -> Res<bool> {
+    let mut ticks = 0;
+    let mut stack = Vec::new();
+    let mut balanced = true;
+
+    for c in val.chars() {
+        ticks += 1;
+        match c {
+            '[' => {
+                stack.push('[');
+            }
+            ']' => {
+                if !stack.pop().is_some_and(|c| c == '[') {
+                    balanced = false;
+                    break;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    Res::new(balanced, ticks)
+}
+
 fn start(name: &str, input: &[usize]) {
     println!("");
     println!("----------- {name}");
@@ -200,4 +224,8 @@ fn main() {
     let value = 36;
     start(&"PRIMES_UNTIL", &[value]);
     primes_until(value as u32).print();
+
+    let value = "[[[    ]]]";
+    start(&"BALANCED_BRACKETS", &[]);
+    balanced_brackets(&value).print();
 }
